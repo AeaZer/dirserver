@@ -12,7 +12,7 @@ import (
 
 const (
 	defaultPort    = 2233
-	defaultDirPath = "./"
+	defaultDirPath = "D:/workspace/go/Hok_platform_api/apidoc"
 )
 
 var (
@@ -25,8 +25,7 @@ var (
 func main() {
 	flagParse()
 
-	fileServer := http.FileServer(http.Dir(*dirPath))
-	http.Handle("/", fileServer)
+	register()
 
 	log.Printf("Starting server on port %d\n", *webPort)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", *webPort), nil); err != nil {
@@ -60,4 +59,9 @@ func flagParse() {
 		}
 		log.Fatalf("Server failed to start: %v\n", err)
 	}
+}
+
+func register() {
+	fileServer := http.FileServer(http.Dir(*dirPath))
+	http.Handle("/", logMiddleWare(fileServer))
 }
