@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 )
 
 const (
@@ -25,8 +24,7 @@ var (
 func main() {
 	flagParse()
 
-	fileServer := http.FileServer(http.Dir(*dirPath))
-	http.Handle("/", fileServer)
+	register()
 
 	log.Printf("Starting server on port %d\n", *webPort)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", *webPort), nil); err != nil {
@@ -45,19 +43,16 @@ func flagParse() {
 	stat, err := os.Stat(*dirPath)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Fatalf("failed to start: %v\n", err)
+			log.Fatalf("Failed to start: %v\n", err)
 		}
 	}
 
 	if !stat.IsDir() {
 		log.Fatalf("--dir :%s not a folder path", *dirPath)
 	}
+}
 
-	_, err = os.Stat(path.Join(*dirPath, "index.html"))
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			log.Fatalf("Server failed to start: %v\n", err)
-		}
-		log.Fatalf("Server failed to start: %v\n", err)
-	}
+func register() {
+	fileServer := http.FileServer(http.Dir(*dirPath))
+	http.Handle("/", mountParent(fileServer))
 }
