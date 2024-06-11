@@ -7,12 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 )
 
 const (
 	defaultPort    = 2233
-	defaultDirPath = "D:/workspace/go/Hok_platform_api/apidoc"
+	defaultDirPath = "./"
 )
 
 var (
@@ -44,24 +43,16 @@ func flagParse() {
 	stat, err := os.Stat(*dirPath)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Fatalf("failed to start: %v\n", err)
+			log.Fatalf("Failed to start: %v\n", err)
 		}
 	}
 
 	if !stat.IsDir() {
 		log.Fatalf("--dir :%s not a folder path", *dirPath)
 	}
-
-	_, err = os.Stat(path.Join(*dirPath, "index.html"))
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			log.Fatalf("Server failed to start: %v\n", err)
-		}
-		log.Fatalf("Server failed to start: %v\n", err)
-	}
 }
 
 func register() {
 	fileServer := http.FileServer(http.Dir(*dirPath))
-	http.Handle("/", logMiddleWare(fileServer))
+	http.Handle("/", mountParent(fileServer))
 }
