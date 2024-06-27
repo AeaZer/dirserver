@@ -8,6 +8,6 @@ import (
 
 func MD5Time(salt string) string {
 	hash := md5.New()
-	_, _ = hash.Write([]byte(time.Now().Format(time.RFC3339Nano)))
+	_, _ = hash.Write([]byte(time.Now().Format(time.RFC3339Nano) + salt))
 	return hex.EncodeToString(hash.Sum(nil))
 }
