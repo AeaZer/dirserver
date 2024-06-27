@@ -11,8 +11,10 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/aeazer/dirserver/utils/color"
+	"github.com/aeazer/dirserver/utils/file"
 )
 
 const (
@@ -27,6 +29,8 @@ var (
 	passcode   string
 	uploadPath string
 	targetPath string
+
+	uploadIsDir bool
 )
 
 const helpMark = "-h"
@@ -66,6 +70,10 @@ func flagParse() {
 
 	checkCommand()
 
+	if err = beforeUpload(); err != nil {
+		fmt.Println("before upload exec failed: ", color.RedDA.Dyeing(err.Error()))
+	}
+
 	if err = upload(); err != nil {
 		fmt.Println("upload failed: ", color.RedDA.Dyeing(err.Error()))
 	}
@@ -80,33 +88,52 @@ func checkCommand() {
 		}
 	}
 	if stat.IsDir() {
-		log.Fatal(color.RedDA.Dyeing("Upload folder is not supported for the time being"))
+		uploadPath, _ = filepath.Abs(uploadPath)
+		uploadIsDir = true
 	}
+}
+
+func beforeUpload() error {
+	if uploadIsDir {
+		err := file.ZipFolder(uploadPath)
+		if err != nil {
+			log.Fatalf(color.RedDA.Dyeing("zip folder failed: path: %s", uploadPath))
+		}
+		uploadPath = uploadPath + ".zip"
+	}
+	return nil
 }
 
 func upload() error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	file, err := os.Open(uploadPath)
+	osFile, err := os.Open(uploadPath)
 	if err != nil {
-		return fmt.Errorf("error opening file: %s", err)
+		return fmt.Errorf("error opening osFile: %s", err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = osFile.Close()
+		if uploadIsDir {
+			_ = os.Remove(uploadPath)
+		}
+	}()
 
-	part, err := writer.CreateFormFile("file", file.Name())
+	fileBaseName := filepath.Base(osFile.Name())
+	part, err := writer.CreateFormFile("file", fileBaseName)
 	if err != nil {
-		return fmt.Errorf("error creating form file: %v", err)
+		return fmt.Errorf("error creating form osFile: %v", err)
 	}
-	_, err = io.Copy(part, file)
+	_, err = io.Copy(part, osFile)
 	if err != nil {
-		return fmt.Errorf("error copying file data: %v", err)
+		return fmt.Errorf("error copying osFile data: %v", err)
 	}
 
 	type uploadParams struct {
 		TargetPath string `json:"target_path"`
+		IsDir      bool   `json:"is_dir"`
 	}
-	p := &uploadParams{TargetPath: targetPath}
+	p := &uploadParams{TargetPath: filepath.Join(targetPath, fileBaseName), IsDir: uploadIsDir}
 	bs, _ := json.Marshal(p)
 	err = writer.WriteField("json_data", string(bs))
 	if err != nil {

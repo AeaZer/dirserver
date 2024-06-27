@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/aeazer/dirserver/utils/color"
 	utilsfile "github.com/aeazer/dirserver/utils/file"
@@ -88,6 +89,7 @@ func checkCommand() {
 	if !stat.IsDir() {
 		log.Fatalf("--dir :%s not a folder path", dirPath)
 	}
+	dirPath, _ = filepath.Abs(dirPath)
 }
 
 func fs() {
@@ -114,6 +116,7 @@ func receiveHandler() http.Handler {
 		jss := r.FormValue("json_data")
 		type receiveParams struct {
 			TargetPath string `json:"target_path"`
+			IsDir      bool   `json:"is_dir"`
 		}
 		var p receiveParams
 		err = json.Unmarshal([]byte(jss), &p)
@@ -125,10 +128,21 @@ func receiveHandler() http.Handler {
 			doWriteJson(w, http.StatusBadRequest, errors.New("target path is empty"))
 			return
 		}
-		err = utilsfile.Save(file, path.Join(dirPath, p.TargetPath))
+		targetPath := path.Join(dirPath, p.TargetPath)
+		err = utilsfile.Save(file, targetPath)
 		if err != nil {
 			doWriteJson(w, http.StatusBadRequest, fmt.Errorf("save file occur error: %v", err))
 			return
+		}
+		if p.IsDir {
+			defer func() {
+				_ = os.Remove(targetPath)
+			}()
+			err = utilsfile.UnzipFile(targetPath)
+			if err != nil {
+				doWriteJson(w, http.StatusBadRequest, fmt.Errorf("unzip file occur error: %v", err))
+				return
+			}
 		}
 		doWriteJson(w, http.StatusAccepted, "file save success!")
 	})
