@@ -1,4 +1,4 @@
-package main
+package share
 
 import "net/http"
 

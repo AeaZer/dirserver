@@ -1,58 +1,38 @@
 package main
 
 import (
-	"errors"
-	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
+	"slices"
+
+	"github.com/aeazer/dirserver/cmd"
+	"github.com/aeazer/dirserver/utils/color"
 )
 
 const (
-	defaultPort    = 2233
-	defaultDirPath = "./"
-)
-
-var (
-	help = flag.Bool("h", false, "Print this help message and exit.")
-
-	webPort = flag.Int("port", defaultPort, "Port to listen on")
-	dirPath = flag.String("dir", defaultDirPath, "Http server for dir")
+	modeShare  = "share"
+	modeUpload = "upload"
+	helpMark   = "-h"
 )
 
 func main() {
-	flagParse()
-
-	register()
-
-	log.Printf("Starting server on port %d\n", *webPort)
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", *webPort), nil); err != nil {
-		log.Fatalf("Server failed to start: %v\n", err)
+	if len(os.Args) == 1 || !slices.Contains([]string{modeShare, modeUpload, helpMark}, os.Args[1]) {
+		fmt.Printf("unknown command mod, you can use dirserver -h to show usage.\n")
+		os.Exit(1)
 	}
-}
-
-func flagParse() {
-	flag.Parse()
-
-	if *help {
-		flag.CommandLine.Usage()
+	cmdMap := cmd.Register()
+	if os.Args[1] == helpMark {
+		fmt.Printf("\nGitHub: %s\n\n", color.BlueDA.Dyeing("https://github.com/aeazer/dirserver"))
+		fmt.Printf("%s:\n  %s [command] [-subcommand]\n",
+			color.BlueDA.Dyeing("Usage"), color.GreenDA.Dyeing("dirserver"))
+		for _, commander := range cmdMap {
+			_ = commander.Run()
+		}
 		os.Exit(0)
 	}
-
-	stat, err := os.Stat(*dirPath)
+	err := cmdMap[os.Args[1]].Run()
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			log.Fatalf("Failed to start: %v\n", err)
-		}
+		log.Fatalf("command run occured error: %v\n", err)
 	}
-
-	if !stat.IsDir() {
-		log.Fatalf("--dir :%s not a folder path", *dirPath)
-	}
-}
-
-func register() {
-	fileServer := http.FileServer(http.Dir(*dirPath))
-	http.Handle("/", mountParent(fileServer))
 }

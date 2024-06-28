@@ -1,4 +1,4 @@
-package main
+package color
 
 import "fmt"
 
@@ -24,15 +24,15 @@ func newColor(color typeColor) *Color {
 	return &Color{color: color}
 }
 
-// dyeing 染色
-func (c *Color) dyeing(format string, a ...any) string {
+// Dyeing 染色
+func (c *Color) Dyeing(format string, a ...any) string {
 	x := fmt.Sprintf(format, a...)
 	return fmt.Sprintf(formatStart+"%v"+formatTail, c.color, x)
 }
 
 var (
-	greenDA  = newColor(green)  // greenDA green Dyeing apparatus
-	redDA    = newColor(red)    // redDA red Dyeing apparatus
-	blueDA   = newColor(blue)   // blueDA blue Dyeing apparatus
-	yellowDA = newColor(yellow) // yellowDA yellow Dyeing apparatus
+	GreenDA  = newColor(green)  // greenDA green Dyeing apparatus
+	RedDA    = newColor(red)    // RedDA red Dyeing apparatus
+	BlueDA   = newColor(blue)   // blueDA blue Dyeing apparatus
+	YellowDA = newColor(yellow) // yellowDA yellow Dyeing apparatus
 )
