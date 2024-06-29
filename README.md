@@ -33,7 +33,7 @@ upload command 是开启了向 share server 的服务器上传文件（**可以�
      -passcode string
            Passcode to upload
      -target_dir string
-            Remote target dir which relative to share server dir (default "./")
+           Remote target dir which relative to share server dir (default "./")
      -upload_path string
            Upload local file path (default "./")
    ```
