@@ -32,8 +32,8 @@ upload command 是开启了向 share server 的服务器上传文件（**可以�
            Address of share server (default "127.0.0.1:2233")
      -passcode string
            Passcode to upload
-     -target_path string
-           Remote target file path (default "./")
+     -target_dir string
+           Remote target dir which relative to share server dir (default "./")
      -upload_path string
            Upload local file path (default "./")
    ```
