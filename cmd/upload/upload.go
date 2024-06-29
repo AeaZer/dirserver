@@ -28,7 +28,7 @@ var (
 	addr       string
 	passcode   string
 	uploadPath string
-	targetPath string
+	targetDir  string
 
 	uploadIsDir bool
 )
@@ -56,7 +56,7 @@ func flagParse() {
 	flagSet.StringVar(&addr, "addr", defaultAddr, "Address of share server")
 	flagSet.StringVar(&passcode, "passcode", defaultPasscode, "Passcode to upload")
 	flagSet.StringVar(&uploadPath, "upload_path", defaultPath, "Upload local file path")
-	flagSet.StringVar(&targetPath, "target_path", defaultPath, "Remote target file path")
+	flagSet.StringVar(&targetDir, "target_dir", defaultPath, "Remote target dir which relative to share server dir")
 	if os.Args[1] == helpMark {
 		flagSet.Usage()
 		help = true
@@ -133,7 +133,7 @@ func upload() error {
 		TargetPath string `json:"target_path"`
 		IsDir      bool   `json:"is_dir"`
 	}
-	p := &uploadParams{TargetPath: filepath.Join(targetPath, fileBaseName), IsDir: uploadIsDir}
+	p := &uploadParams{TargetPath: filepath.Join(targetDir, fileBaseName), IsDir: uploadIsDir}
 	bs, _ := json.Marshal(p)
 	err = writer.WriteField("json_data", string(bs))
 	if err != nil {
