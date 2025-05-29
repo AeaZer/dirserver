@@ -1,11 +1,18 @@
 English | [简体中文](README.md)
 ### 🤷‍ dirserver
 
-Dirserver has two command-line modes: share and upload. These two modes are decoupled, meaning you can use either mode without conflict; however, they are also coupled because upload serves to provide files to the share server. I'm not sure if there will be a remove mode in the future, but for now, I don't need it. If I have the energy, I will extend it to include a remove mode.
+dirserver has two command modes:
 
-The share server command functions similarly to the Python http.server function, launching a Web server for the folder's file system. This allows you to easily start a Web service for static resources, browse the contents of files and web pages under the specified directory, download zips, etc. This is just a bit of encapsulation on top of the native standard library functionality. If file reception is enabled, i.e., `--open_receive=true`, a key ID (passcode) will be generated, forming part of the formatted http receive API: `{ip:port}/receive/${passcode}`. Detailed API documentation will be provided below.
+1. **upload** - Provides files to the share server
+2. **share** - Shares files and receives files via HTTP (optional)
 
-The upload command enables uploading files (which can be a folder) to the share server. You need to obtain the share server's passcode to execute this successfully, but currently, it seems rather redundant.
+The share server command functions similarly to Python's http.server,
+launching a web server for the directory file system. It can easily start web services for static resources,
+allowing users to:
+1. Browse files within the --dir scope
+2. View web pages
+3. Download zip files
+4. Receive files when --open_receive=true is enabled (generates a passcode ID that forms part of the HTTP receive API: {ip:port}/receive/${passcode})
 
 ### quickstart
 
@@ -14,7 +21,7 @@ The upload command enables uploading files (which can be a folder) to the share 
 3. In the host, type `dirserver -h`. If installed correctly, it will output the following information:
    ```powershell
    GitHub: https://github.com/aeazer/dirserver
-   
+
    Usage:
      dirserver [command] [-subcommand]
    Usage of share command:
@@ -36,8 +43,6 @@ The upload command enables uploading files (which can be a folder) to the share 
      -upload_path string
            Upload local file path (default "./")
    ```
-4. `dirserver --dir ${your_folder_path}` Next, open the browser and you will see the output displayed on the console, as shown in the image built using dirserver.
-![Effect Picture](http://www.areazer.top/static/dirserver/dirserver.png)
 
 ### dirserver share api
 - Receive files
@@ -48,7 +53,7 @@ The upload command enables uploading files (which can be a folder) to the share 
    * @apiGroup /receive
    *
    * @apiParam {File} file File
-   * @apiParam {String} json_data "{"target_path": "Target Path", "is_dir": false}"
+   * @apiParam {String} params like {"target_path": "Target Path", "is_dir": false}
    *
    * @apiHeaderExample {json} Header-Example:
    *     {

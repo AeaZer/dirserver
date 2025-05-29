@@ -11,9 +11,12 @@ const (
 	red    typeColor = 31
 	yellow typeColor = 33
 	none   typeColor = -1 // none 无颜色
+)
 
-	formatStart = "\x1b[0;%dm" // formatStart 颜色开始
-	formatTail  = "\x1b[0m"    // formatTail 颜色重置
+// ColorStart and ColorEnd are the escape sequences for starting and ending a color.
+var (
+	formatStart = "\x1b[0;%dm"  // formatStart is the start of the format sequence.
+	formatTail  = "\x1b[0m"     // formatTail is the end of the format sequence.
 )
 
 type Color struct {
@@ -24,15 +27,15 @@ func newColor(color typeColor) *Color {
 	return &Color{color: color}
 }
 
-// Dyeing 染色
+// Dyeing applies a color to formatted text.
 func (c *Color) Dyeing(format string, a ...any) string {
 	x := fmt.Sprintf(format, a...)
-	return fmt.Sprintf(formatStart+"%v"+formatTail, c.color, x)
+	return fmt.Sprintf(formatStart+"%s"+formatTail, c.color, x)
 }
 
 var (
-	GreenDA  = newColor(green)  // greenDA green Dyeing apparatus
-	RedDA    = newColor(red)    // RedDA red Dyeing apparatus
-	BlueDA   = newColor(blue)   // blueDA blue Dyeing apparatus
-	YellowDA = newColor(yellow) // yellowDA yellow Dyeing apparatus
+	GreenDA  = newColor(green)  // greenDA is the Green Dyeing apparatus.
+	RedDA    = newColor(red)     // RedDA is the Red Dyeing apparatus.
+	BlueDA   = newColor(blue)    // BlueDA is the Blue Dyeing apparatus.
+	YellowDA = newColor(yellow)  // YellowDA is the Yellow Dyeing apparatus.
 )

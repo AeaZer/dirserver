@@ -113,7 +113,7 @@ func receiveHandler() http.Handler {
 			return
 		}
 		defer file.Close()
-		jss := r.FormValue("json_data")
+		jss := r.FormValue("params")
 		type receiveParams struct {
 			TargetPath string `json:"target_path"`
 			IsDir      bool   `json:"is_dir"`

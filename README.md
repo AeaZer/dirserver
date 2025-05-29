@@ -2,11 +2,16 @@
 
 ### 🤷‍ dirserver
 
-Dirserver 有两种命令行模式，分别是 share 和 upload，这两种模式是解耦的，不冲突；这两种模式又是耦合的，upload 是为 share server 提供文件
+Dirserver 有两种命令模式。
 
-share server command 的作用类似于 Python http.server 函数，为文件夹文件系统启动 Web 服务器。这使您可以轻松地启动静态资源的 Web 服务，可以浏览 --dir 范围下的文件内容、网页，下载 zip 等等, 如果开启了文件接收即`--open_receive=true`会生成密钥 ID(passcode) 组成 http receive api 的一部分格式化之后的 api 是`{ip:port}/receive/${passcode}`
+1. **upload** 是为 share server 提供文件
+2. **shar** 是共享文件并通过 http 的方式接收文件（这是可选的）
+share server 命令的功能类似于 Python 的 http.server，为目录文件系统启动 Web 服务器。它可以轻松启动静态资源的 Web 服务，允许用户：
 
-upload command 是开启了向 share server 的服务器上传文件（**可以是一个文件夹**），需要拿到 share server 的 passcode 才可以执行成功.
+1. 浏览 --dir 范围内的文件
+2. 查看网页
+3. 下载 zip 文件
+4. 启用 --open_receive=true 时接收文件（生成构成 HTTP 接收 API 一部分的密码 ID：{ip：port}receive{passcode}）
 
 ### quickstart
 
@@ -37,8 +42,6 @@ upload command 是开启了向 share server 的服务器上传文件（**可以�
      -upload_path string
            Upload local file path (default "./")
    ```
-4. `dirserver --dir ${your_folder_path}` 接下来在浏览器中打开将在控制台上输出，如您所见，这张图片是使用 dirserver 构建的。
-![效果图](http://www.areazer.top/static/dirserver/dirserver.png)
 
 ### dirserver share api
 - 接收文件
@@ -49,7 +52,7 @@ upload command 是开启了向 share server 的服务器上传文件（**可以�
    * @apiGroup /receive
    *
    * @apiParam {File} file 文件
-   * @apiParam {String} json_data "{"target_path": "目标路径", "is_dir": false}"
+   * @apiParam {String} params {"target_path": "目标路径", "is_dir": false}
    *
    * @apiHeaderExample {json} Header-Example:
    *     {
