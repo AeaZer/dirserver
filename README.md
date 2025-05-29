@@ -2,11 +2,11 @@
 
 ### 🤷‍ dirserver
 
-Dirserver 有两种命令行模式，分别是 share 和 upload，这两种模式是解耦的，随便你使用什么模式，不冲突；这两种模式又是耦合的，upload 是为 share server 提供文件，不确定后面会不会再有 remove 模式，确定的是现在我是不需要的，如果我有精力的话我会去扩展出 remove 
+Dirserver 有两种命令行模式，分别是 share 和 upload，这两种模式是解耦的，不冲突；这两种模式又是耦合的，upload 是为 share server 提供文件
 
-share server command 的作用类似于 Python http.server 函数，为文件夹文件系统启动 Web 服务器。这使您可以轻松地启动静态资源的 Web 服务，可以浏览 --dir 范围下的文件内容、网页，下载 zip 等等，这是原生标准库就提供的，我只是做了一点封装而已，如果开启了文件接收即`--open_receive=true`会生成密钥 ID(passcode) 组成 http receive api 的一部分格式化之后的 api 是`{ip:port}/receive/${passcode}`下面会有详细的接口文档 
+share server command 的作用类似于 Python http.server 函数，为文件夹文件系统启动 Web 服务器。这使您可以轻松地启动静态资源的 Web 服务，可以浏览 --dir 范围下的文件内容、网页，下载 zip 等等, 如果开启了文件接收即`--open_receive=true`会生成密钥 ID(passcode) 组成 http receive api 的一部分格式化之后的 api 是`{ip:port}/receive/${passcode}`
 
-upload command 是开启了向 share server 的服务器上传文件（**可以是一个文件夹**），需要拿到 share server 的 passcode 才可以执行成功，但是目前好像是比较鸡肋的。
+upload command 是开启了向 share server 的服务器上传文件（**可以是一个文件夹**），需要拿到 share server 的 passcode 才可以执行成功.
 
 ### quickstart
 
