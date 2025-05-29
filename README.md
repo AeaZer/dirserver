@@ -5,7 +5,7 @@
 Dirserver 有两种命令模式。
 
 1. **upload** 是为 share server 提供文件
-2. **shar** 是共享文件并通过 http 的方式接收文件（这是可选的）
+2. **share** 是共享文件并通过 http 的方式接收文件（这是可选的）
 share server 命令的功能类似于 Python 的 http.server，为目录文件系统启动 Web 服务器。它可以轻松启动静态资源的 Web 服务，允许用户：
 
 1. 浏览 --dir 范围内的文件
